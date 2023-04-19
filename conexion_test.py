@@ -1,15 +1,16 @@
 import ubluetooth
 import random
 import time
-from ubluetooth import BLE, UUID, FLAG_READ, FLAG_NOTIFY, FLAG_WRITE, BLE_IRQ_GATTS_WRITE
+from ubluetooth import BLE, UUID, FLAG_READ, FLAG_NOTIFY, FLAG_WRITE
 from micropython import const
 
-_DEVICE_NAME = 'Exoesqueleto'
+_DEVICE_NAME = 'ESP32_BLE'
 _SERVICE_UUID = UUID('12345678-1234-5678-1234-56789ABCDEF0')
 _CHAR_UUID = UUID('12345678-1234-5678-1234-56789ABCDEF1')
 _CONTROL_CHAR_UUID = UUID('12345678-1234-5678-1234-56789ABCDEF2')
 _BLE_IRQ_CENTRAL_CONNECT = const(1)
 _BLE_IRQ_CENTRAL_DISCONNECT = const(2)
+_BLE_IRQ_GATTS_WRITE = const(3)
 
 class BLEServer:
     def __init__(self, ble, name):
@@ -46,7 +47,7 @@ class BLEServer:
             conn_handle, _, _, = data
             self._connections.remove(conn_handle)
             self._ble.gap_advertise(100, adv_data=self._adv_data)
-        elif event == BLE_IRQ_GATTS_WRITE:
+        elif event == _BLE_IRQ_GATTS_WRITE:
             conn_handle, attr_handle, buf, offset = data
             if attr_handle == self._handles[0][1][1] and buf[0] in (0x00, 0x01):
                 self._transmitting = buf[0] == 0x01
@@ -73,7 +74,7 @@ def main():
             random_value = random.randrange(20, 51)
             ble_server.set_payload(random_value)
             ble_server.send_payload()
-            time.sleep(0.5)
+    time.sleep(0.5)
 
-if __name__ ==
-
+if __name__ == '__main__':
+    main()
